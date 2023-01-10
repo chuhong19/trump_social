@@ -1,0 +1,36 @@
+{
+  "name": "mysocial",
+  "version": "1.0.0",
+  "description": "My social network ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chuhong19/My-Social.git"
+  },
+  "keywords": [
+    "social"
+  ],
+  "author": "Gia Bao Huynh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chuhong19/My-Social/issues"
+  },
+  "homepage": "https://github.com/chuhong19/My-Social#readme",
+  "dependencies": {
+    "config": "^3.3.8",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.18.2",
+    "express-handlebars": "^6.0.6",
+    "jsonwebtoken": "^9.0.0",
+    "method-override": "^3.0.0",
+    "mongoose": "^6.8.3",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.20",
+    "os": "^0.1.2",
+    "path": "^0.12.7"
+  }
+}
