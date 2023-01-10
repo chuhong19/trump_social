@@ -24,12 +24,18 @@ class SiteController {
 
     wall (req, res, next) {
         var id = jwt.verify(req.cookies.token, 'mk');
-        Post.find({authorId: id})
-            .then(posts => {
-                res.render('wall', {
-                    posts: mutipleMongooseToObject(posts)
-                });
+        Account.findOne({_id: id})
+            .then(account => {
+                Post.find({authorId: id})
+                    .then(posts => {
+                        res.render('wall', {
+                            posts: mutipleMongooseToObject(posts),
+                            account: mongooseToObject(account)
+                    });
+                })
             })
+            .catch ();
+        
     }
 
     profile (req, res, next) {
@@ -37,7 +43,6 @@ class SiteController {
         Account.findOne({_id: id})
             .then(data => {
                 data: mongooseToObject(data)
-                console.log(data);
                 res.render('profile', {
                     data: mongooseToObject(data)
                 });
