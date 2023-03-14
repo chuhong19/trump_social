@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const methodOverride = require('method-override');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+var session = require('express-session');
 
 const app = express();
 const port = 3000;
@@ -34,6 +35,51 @@ app.engine('hbs', engine({
 
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'resources\\views'));
+
+/////////////FACEBOOK LOGIN////////////////
+
+app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }
+}))
+
+var passport = require('passport');
+var FacebookStrategy = require('passport-facebook').Strategy;
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.use(new FacebookStrategy({
+  clientID: "727200508718906",
+  clientSecret: "ac9309b2da39bf8bb614c6c83d6260ec",
+  callbackURL: "https://9a7c-2405-4802-c3a2-8d50-746b-2658-5ef3-9c3f.ap.ngrok.io/auth/facebook/callback"
+},
+function(accessToken, refreshToken, profile, cb) {
+  console.log(profile);
+  return cb(null, profile);
+}
+));
+
+app.get('/auth/facebook',
+  passport.authenticate('facebook'));
+
+app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  function(req, res) {
+    res.redirect('/');
+  });
+
+////////////////////////  FACEBOOKLOGIN //////////////////////////
 
 route(app);
 

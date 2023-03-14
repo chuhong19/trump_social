@@ -52,6 +52,7 @@ class SiteController {
     confirmeditprofile (req, res, next) {
         res.json('abc');
     }
+
 }
 
 module.exports = new SiteController();
