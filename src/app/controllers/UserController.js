@@ -18,9 +18,12 @@ class UserController {
     addFriendUser(req, res, next) {
         var token = req.cookies.token;
         var myId = jwt.verify(token, 'mk')._id;
-        Account.findByIdAndUpdate(myId, { $push: {friendlist: req.params.id}})
+        console.log(myId);
+        console.log(req.params.id);
+        Account.updateOne({authorId: myId}, { $push: {friendlist: req.params.id}})
+            .then(res.json('Success'))
+            .catch(next);
     }
-
 }
 
 module.exports = new UserController();
