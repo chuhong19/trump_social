@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>User's wall</title>
+  </head>
+  <body>
+    <h1>Posts</h1>
+    {{#if post}}
+      <ul>
+        {{#each post}}
+            <div class="col-sm-6 col-lg-4">
+            <div class="card card-course-item">
+                <div class="card-body">
+                    <h3>{{this.authorId}}</h3>
+                    <h5 class="card-title">{{this.title}}</h5>
+                    <p class="card-text">{{this.text}}</p>
+                    <a href="#" class="btn btn-primary">Like</a>
+                    <button><a href="{{post.authorId}}/addfriend">Add friend</a></button>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+      </ul>
+    {{else}}
+      <p>This user has no posts.</p>
+    {{/if}}
+  </body>
+</html>

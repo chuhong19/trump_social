@@ -10,6 +10,7 @@ const Account = new Schema({
     email: { type: String },
     phone: { type: String },
     avatar: { type: String },
+    friendlist: { type: Array },
 },
 {
     timestamps: true
