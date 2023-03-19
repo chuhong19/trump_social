@@ -1,0 +1,8 @@
+
+<ul>
+  {{#each friendreceived}}
+    <li>{{this}}</li>
+    <button><a href="/user/{{this}}/acceptRequest">Accept</a></button>
+    <button><a href="/user/{{this}}/declineRequest">Decline</a></button>
+  {{/each}}
+</ul>
