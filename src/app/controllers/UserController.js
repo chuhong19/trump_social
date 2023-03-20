@@ -49,7 +49,7 @@ class UserController {
     var myId = jwt.verify(token, 'mk')._id;
     let a = Account.updateOne(
       { _id: myId },
-      { $push: { friendlist: req.params.id } },
+      { $push: { friendlist: req.params.id } }
     );
     let b = Account.updateOne(
       { _id: myId },
@@ -67,26 +67,26 @@ class UserController {
   }
 
   declineRequest(req, res, next) {
-    let ab = Account.updateOne(
-        { _id: myId },
-        { $pull: { friendreceived: req.params.id } }
-    )
+    let a = Account.updateOne(
+      { _id: myId },
+      { $pull: { friendreceived: req.params.id } }
+    );
     let b = Account.updateOne(
-        { _id: req.params.id },
-        { $pull: { friendrequest: myId } }
-    )
+      { _id: req.params.id },
+      { $pull: { friendrequest: myId } }
+    );
     Promise.all([a, b]).then(res.json('Decline')).catch(next);
   }
 
   showFriendList(req, res, next) {
     var token = req.cookies.token;
     var myId = jwt.verify(token, 'mk')._id;
-    Account.find({_id: myId})
-        .then(user => {
-            var friends = user[0].friendlist;
-            res.render('users/friends', {friends: mongooseToObject(friends)})
-        })
-        .catch(next);
+    Account.find({ _id: myId })
+      .then((user) => {
+        var friends = user[0].friendlist;
+        res.render('users/friends', { friends: mongooseToObject(friends) });
+      })
+      .catch(next);
   }
 }
 
