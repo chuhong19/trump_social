@@ -10,9 +10,13 @@ class UserController {
   viewUser(req, res, next) {
     var token = req.cookies.token;
     var myId = jwt.verify(token, 'mk')._id;
-    Post.find({ authorId: req.params.id })
+    var authorId = req.params.id;
+    Post.find({ authorId: authorId })
       .then((post) => {
-        res.render('users/viewuser', { post: mutipleMongooseToObject(post) });
+        res.render('users/viewuser', {
+          post: mutipleMongooseToObject(post),
+          authorId,
+        });
       })
       .catch(next);
   }
@@ -22,26 +26,72 @@ class UserController {
       const token = req.cookies.token;
       const myId = jwt.verify(token, 'mk')._id;
       const yourId = req.params.id;
-  
+
       const myAccount = await Account.findById(myId);
       const myFullname = myAccount.fullname;
-  
+
       const yourAccount = await Account.findById(yourId);
       const yourFullname = yourAccount.fullname;
-  
+
       const promises = [
         Account.updateOne(
           { _id: myId },
-          { $push: { friendrequest: { accountId: yourId, fullname: yourFullname } } }
+          {
+            $push: {
+              friendrequest: { accountId: yourId, fullname: yourFullname },
+            },
+          }
         ),
         Account.updateOne(
           { _id: yourId },
-          { $push: { friendreceived: { accountId: myId, fullname: myFullname } } }
+          {
+            $push: {
+              friendreceived: { accountId: myId, fullname: myFullname },
+            },
+          }
         ),
       ];
-  
+
       await Promise.all(promises);
-      res.json('Success');
+      res.redirect('/user/request');
+    } catch (error) {
+      res.status(500).send('Internal server error');
+    }
+  }
+
+  async removeRequest(req, res, next) {
+    try {
+      const token = req.cookies.token;
+      const myId = jwt.verify(token, 'mk')._id;
+      const yourId = req.params.id;
+
+      const myAccount = await Account.findById(myId);
+      const myFullname = myAccount.fullname;
+
+      const yourAccount = await Account.findById(yourId);
+      const yourFullname = yourAccount.fullname;
+
+      const promises = [
+        Account.updateOne(
+          { _id: myId },
+          {
+            $pull: {
+              friendrequest: { accountId: yourId, fullname: yourFullname },
+            },
+          }
+        ),
+        Account.updateOne(
+          { _id: yourId },
+          {
+            $pull: {
+              friendreceived: { accountId: myId, fullname: myFullname },
+            },
+          }
+        ),
+      ];
+
+      await Promise.all(promises);
+      res.redirect('/user/request');
     } catch (error) {
       res.status(500).send('Internal server error');
     }
@@ -60,38 +110,137 @@ class UserController {
       .catch(next);
   }
 
-  acceptRequest(req, res, next) {
+  showRequestSent(req, res, next) {
     var token = req.cookies.token;
     var myId = jwt.verify(token, 'mk')._id;
-    let a = Account.updateOne(
-      { _id: myId },
-      { $push: { friendlist: req.params.id } }
-    );
-    let b = Account.updateOne(
-      { _id: myId },
-      { $pull: { friendreceived: req.params.id } }
-    );
-    let c = Account.updateOne(
-      { _id: req.params.id },
-      { $push: { friendlist: myId } }
-    );
-    let d = Account.updateOne(
-      { _id: req.params.id },
-      { $pull: { friendrequest: myId } }
-    );
-    Promise.all([a, b, c, d]).then(res.json('Success')).catch(next);
+    Account.findOne({ _id: myId })
+      .then((user) => {
+        let friendrequest = user.friendrequest;
+        res.render('users/request', {
+          friendrequest: mongooseToObject(friendrequest),
+        });
+      })
+      .catch(next);
   }
 
-  declineRequest(req, res, next) {
-    let a = Account.updateOne(
-      { _id: myId },
-      { $pull: { friendreceived: req.params.id } }
-    );
-    let b = Account.updateOne(
-      { _id: req.params.id },
-      { $pull: { friendrequest: myId } }
-    );
-    Promise.all([a, b]).then(res.json('Decline')).catch(next);
+  async acceptRequest(req, res, next) {
+    try {
+      var token = req.cookies.token;
+      var myId = jwt.verify(token, 'mk')._id;
+      const yourId = req.params.id;
+
+      const myAccount = await Account.findById(myId);
+      const myFullname = myAccount.fullname;
+
+      const yourAccount = await Account.findById(yourId);
+      const yourFullname = yourAccount.fullname;
+
+      const promises = [
+        Account.updateOne(
+          { _id: myId },
+          {
+            $push: {
+              friendlist: { accountId: yourId, fullname: yourFullname },
+            },
+          }
+        ),
+        Account.updateOne(
+          { _id: myId },
+          {
+            $pull: {
+              friendreceived: { accountId: yourId, fullname: yourFullname },
+            },
+          }
+        ),
+        Account.updateOne(
+          { _id: yourId },
+          { $push: { friendlist: { accountId: myId, fullname: myFullname } } }
+        ),
+        Account.updateOne(
+          { _id: yourId },
+          {
+            $pull: { friendrequest: { accountId: myId, fullname: myFullname } },
+          }
+        ),
+      ];
+      await Promise.all(promises);
+      res.redirect('/user/friends');
+    } catch (error) {
+      res.status(500).send('Internal server error');
+    }
+  }
+
+  async declineRequest(req, res, next) {
+    try {
+      var token = req.cookies.token;
+      var myId = jwt.verify(token, 'mk')._id;
+      const yourId = req.params.id;
+
+      const myAccount = await Account.findById(myId);
+      const myFullname = myAccount.fullname;
+
+      const yourAccount = await Account.findById(yourId);
+      const yourFullname = yourAccount.fullname;
+
+      const promises = [
+        Account.updateOne(
+          { _id: myId },
+          {
+            $pull: {
+              friendreceived: { accountId: yourId, fullname: yourFullname },
+            },
+          }
+        ),
+        Account.updateOne(
+          { _id: yourId },
+          {
+            $pull: { friendrequest: { accountId: myId, fullname: myFullname } },
+          }
+        ),
+      ];
+      await Promise.all(promises);
+      res.redirect('/user/received');
+    } catch (error) {
+      res.status(500).send('Internal server error');
+    }
+  }
+
+  async unfriend(req, res, next) {
+    try {
+      const token = req.cookies.token;
+      const myId = jwt.verify(token, 'mk')._id;
+      const yourId = req.params.id;
+
+      const myAccount = await Account.findById(myId);
+      const myFullname = myAccount.fullname;
+
+      const yourAccount = await Account.findById(yourId);
+      const yourFullname = yourAccount.fullname;
+
+      const promises = [
+        Account.updateOne(
+          { _id: myId },
+          {
+            $pull: {
+              friendlist: { accountId: yourId, fullname: yourFullname },
+            },
+          }
+        ),
+        Account.updateOne(
+          { _id: yourId },
+          {
+            $pull: {
+              friendlist: { accountId: myId, fullname: myFullname },
+            },
+          }
+        ),
+      ];
+
+      await Promise.all(promises);
+      res.redirect('/user/friends');
+    } catch (error) {
+      res.status(500).send('Internal server error');
+    }
   }
 
   showFriendList(req, res, next) {

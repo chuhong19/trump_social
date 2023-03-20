@@ -1,9 +1,5 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>User's wall</title>
-  </head>
-  <body>
+<button><a href="{{authorId}}/addfriend">Add friend</a></button>
+
     <h1>Posts</h1>
     {{#if post}}
       <ul>
@@ -15,7 +11,6 @@
                     <h5 class="card-title">{{this.title}}</h5>
                     <p class="card-text">{{this.text}}</p>
                     <a href="#" class="btn btn-primary">Like</a>
-                    <button><a href="{{this.authorId}}/addfriend">Add friend</a></button>
                 </div>
             </div>
         </div>
@@ -24,5 +19,4 @@
     {{else}}
       <p>This user has no posts.</p>
     {{/if}}
-  </body>
-</html>
+  

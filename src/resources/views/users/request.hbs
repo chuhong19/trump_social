@@ -1,0 +1,7 @@
+
+<ul>
+  {{#each friendrequest}}
+    <li>{{this.fullname}}</li>
+    <button><a href="/user/{{this.accountId}}/removeRequest">Remove request</a></button>
+  {{/each}}
+</ul>
