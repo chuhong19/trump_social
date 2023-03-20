@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-const Account = new Schema({
+const Account = new Schema(
+  {
     username: { type: String, require: true },
     password: { type: String, require: true },
     fullname: { type: String },
@@ -10,13 +11,17 @@ const Account = new Schema({
     email: { type: String },
     phone: { type: String },
     avatar: { type: String },
-    friendlist: [String],
-    friendrequest: [String],
-    friendreceived: [String],
-},
-{
-    timestamps: true
-},
-  );
+    friendrequest: [
+      { accountId: { type: String }, fullname: { type: String } },
+    ],
+    friendreceived: [
+      { accountId: { type: String }, fullname: { type: String } },
+    ],
+    friendlist: [{ accountId: { type: String }, fullname: { type: String } }],
+  },
+  {
+    timestamps: true,
+  }
+);
 
 module.exports = mongoose.model('Account', Account);
