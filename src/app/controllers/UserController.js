@@ -8,8 +8,6 @@ const jwt = require('jsonwebtoken');
 
 class UserController {
   viewUser(req, res, next) {
-    var token = req.cookies.token;
-    var myId = jwt.verify(token, 'mk')._id;
     var authorId = req.params.id;
     Post.find({ authorId: authorId })
       .then((post) => {

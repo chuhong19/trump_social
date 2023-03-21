@@ -83,7 +83,16 @@ class AccountController {
   }
 
   editprofile(req, res, next) {
-    res.render('editprofile');
+    const token = req.cookies.token;
+    const myId = jwt.verify(token, 'mk')._id;
+    Account.findById(myId)
+      .then((user) => {
+        console.log(user);
+        res.render('editprofile', {
+          user: mongooseToObject(user),
+        });
+      })
+      .catch(next);
   }
 
   confirmeditprofile(req, res, next) {
