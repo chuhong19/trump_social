@@ -11,7 +11,15 @@ router.post('/login', accountController.confirmLogin);
 router.get('/create', accountController.create);
 router.post('/store', accountController.store);
 router.get('/logout', accountController.logout);
-router.get('/editprofile', authMiddleware.requireAuth, accountController.editprofile);
-router.put('/confirmeditprofile', authMiddleware.requireAuth, accountController.confirmeditprofile);
+router.get(
+  '/editprofile',
+  authMiddleware.requireAuth,
+  accountController.editprofile
+);
+router.put(
+  '/confirmeditprofile',
+  authMiddleware.requireAuth,
+  accountController.confirmeditprofile
+);
 
 module.exports = router;

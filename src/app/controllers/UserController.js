@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 
 class UserController {
   viewUser(req, res, next) {
-    var authorId = req.params.id;
+    const authorId = req.params.id;
     Post.find({ authorId: authorId })
       .then((post) => {
         res.render('users/viewuser', {
@@ -21,8 +21,7 @@ class UserController {
 
   async addFriendUser(req, res, next) {
     try {
-      const token = req.cookies.token;
-      const myId = jwt.verify(token, 'mk')._id;
+      const myId = req.session.userId;
       const yourId = req.params.id;
 
       const myAccount = await Account.findById(myId);
@@ -59,8 +58,7 @@ class UserController {
 
   async removeRequest(req, res, next) {
     try {
-      const token = req.cookies.token;
-      const myId = jwt.verify(token, 'mk')._id;
+      const myId = req.session.userId;
       const yourId = req.params.id;
 
       const myAccount = await Account.findById(myId);
@@ -96,11 +94,10 @@ class UserController {
   }
 
   showReceivedFriendRequest(req, res, next) {
-    var token = req.cookies.token;
-    var myId = jwt.verify(token, 'mk')._id;
+    const myId = req.session.userId;
     Account.findOne({ _id: myId })
       .then((user) => {
-        let friendreceived = user.friendreceived;
+        const friendreceived = user.friendreceived;
         res.render('users/received', {
           friendreceived: mongooseToObject(friendreceived),
         });
@@ -109,11 +106,10 @@ class UserController {
   }
 
   showRequestSent(req, res, next) {
-    var token = req.cookies.token;
-    var myId = jwt.verify(token, 'mk')._id;
+    const myId = req.session.userId;
     Account.findOne({ _id: myId })
       .then((user) => {
-        let friendrequest = user.friendrequest;
+        const friendrequest = user.friendrequest;
         res.render('users/request', {
           friendrequest: mongooseToObject(friendrequest),
         });
@@ -123,8 +119,7 @@ class UserController {
 
   async acceptRequest(req, res, next) {
     try {
-      var token = req.cookies.token;
-      var myId = jwt.verify(token, 'mk')._id;
+      const myId = req.session.userId;
       const yourId = req.params.id;
 
       const myAccount = await Account.findById(myId);
@@ -170,8 +165,7 @@ class UserController {
 
   async declineRequest(req, res, next) {
     try {
-      var token = req.cookies.token;
-      var myId = jwt.verify(token, 'mk')._id;
+      const myId = req.session.userId;
       const yourId = req.params.id;
 
       const myAccount = await Account.findById(myId);
@@ -205,8 +199,7 @@ class UserController {
 
   async unfriend(req, res, next) {
     try {
-      const token = req.cookies.token;
-      const myId = jwt.verify(token, 'mk')._id;
+      const myId = req.session.userId;
       const yourId = req.params.id;
 
       const myAccount = await Account.findById(myId);
@@ -242,8 +235,7 @@ class UserController {
   }
 
   showFriendList(req, res, next) {
-    var token = req.cookies.token;
-    var myId = jwt.verify(token, 'mk')._id;
+    const myId = req.session.userId;
     Account.find({ _id: myId })
       .then((user) => {
         var friends = user[0].friendlist;

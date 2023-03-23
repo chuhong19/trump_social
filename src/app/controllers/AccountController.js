@@ -9,9 +9,9 @@ class AccountController {
   }
 
   confirmRegister(req, res, next) {
-    var username = req.body.username;
-    var password = req.body.password;
-    var retypepassword = req.body.retypepassword;
+    const username = req.body.username;
+    const password = req.body.password;
+    const retypepassword = req.body.retypepassword;
     if (
       !username ||
       !password ||
@@ -44,8 +44,10 @@ class AccountController {
     Account.findOne({ username, password })
       .then((data) => {
         if (data) {
-          var token = jwt.sign({ _id: data._id }, 'mk');
+          const token = jwt.sign({ _id: data._id }, 'mk');
           res.cookie('token', token);
+          const userId = jwt.verify(token, 'mk')._id;
+          req.session.userId = userId;
           res.redirect('/welcome');
         } else {
           res.json('Wrong username or password');
@@ -59,13 +61,12 @@ class AccountController {
   }
 
   store(req, res, next) {
-    var token = req.cookies.token;
-    var authorId = jwt.verify(token, 'mk');
-    Account.findById(authorId)
+    const userId = req.session.userId;
+    Account.findById(userId)
       .then((author) => {
-        let authorName = author.fullname;
+        const authorName = author.fullname;
         const post = new Post(req.body);
-        post.authorId = authorId;
+        post.authorId = userId;
         post.authorName = authorName;
         return post.save();
       })
@@ -79,15 +80,19 @@ class AccountController {
 
   logout(req, res, next) {
     res.clearCookie('token');
-    res.redirect('/');
+    req.session.destroy((err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.redirect('/');
+      }
+    });
   }
 
   editprofile(req, res, next) {
-    const token = req.cookies.token;
-    const myId = jwt.verify(token, 'mk')._id;
-    Account.findById(myId)
+    const userId = req.session.userId;
+    Account.findById(userId)
       .then((user) => {
-        console.log(user);
         res.render('editprofile', {
           user: mongooseToObject(user),
         });
@@ -96,8 +101,8 @@ class AccountController {
   }
 
   confirmeditprofile(req, res, next) {
-    var id = jwt.verify(req.cookies.token, 'mk');
-    Account.updateOne({ _id: id }, req.body)
+    const userId = req.session.userId;
+    Account.updateOne({ _id: userId }, req.body)
       .then(() => res.redirect('/wall'))
       .catch(next);
   }

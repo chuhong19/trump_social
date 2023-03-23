@@ -1,10 +1,13 @@
 const express = require('express');
 const { engine } = require('express-handlebars');
-const morgan = require('morgan');
+//const morgan = require('morgan');
 const methodOverride = require('method-override');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-var session = require('express-session');
+const session = require('express-session');
+const RedisStore = require('connect-redis').default;
+const Redis = require('ioredis');
+const clientRedis = new Redis();
 
 const app = express();
 const port = 3000;
@@ -41,19 +44,20 @@ app.engine(
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'resources\\views'));
 
-/////////////FACEBOOK LOGIN////////////////
-
 app.use(
   session({
     secret: 'keyboard cat',
+    store: new RedisStore({ client: clientRedis }),
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false },
   })
 );
 
-var passport = require('passport');
-var FacebookStrategy = require('passport-facebook').Strategy;
+/////////////FACEBOOK LOGIN////////////////
+
+const passport = require('passport');
+const FacebookStrategy = require('passport-facebook').Strategy;
 
 app.use(passport.initialize());
 app.use(passport.session());
