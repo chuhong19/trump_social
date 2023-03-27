@@ -56,11 +56,11 @@ class AccountController {
       .catch((err) => res.json('Server error: ' + err));
   }
 
-  create(req, res, next) {
+  createPost(req, res, next) {
     res.render('posts/create');
   }
 
-  store(req, res, next) {
+  storePost(req, res, next) {
     const userId = req.session.userId;
     Account.findById(userId)
       .then((author) => {
@@ -76,6 +76,26 @@ class AccountController {
       .catch((err) => {
         res.json(err);
       });
+  }
+
+  editPost(req, res, next) {
+    Post.findById(req.params.id)
+      .then(post => res.render('posts/edit', {
+        post: mongooseToObject(post)
+      }))
+      .catch(next);
+  }
+
+  updatePost(req, res, next) {
+    Post.updateOne({_id: req.params.id}, req.body)
+      .then(() => res.redirect('/welcome'))
+      .catch(next);
+  }
+
+  deletePost(req, res, next) {
+    Post.deleteOne({_id: req.params.id})
+      .then(() => res.redirect('/welcome'))
+      .catch(next);
   }
 
   logout(req, res, next) {

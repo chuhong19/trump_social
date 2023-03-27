@@ -8,9 +8,7 @@ const authMiddleware = require('../app/middlewares/auth');
 router.get('/register', accountController.register);
 router.post('/register', accountController.confirmRegister);
 router.post('/login', accountController.confirmLogin);
-router.get('/create', accountController.create);
-router.post('/store', accountController.store);
-router.get('/logout', accountController.logout);
+router.get('/logout', authMiddleware.requireAuth, accountController.logout);
 router.get(
   '/editprofile',
   authMiddleware.requireAuth,
@@ -21,5 +19,11 @@ router.put(
   authMiddleware.requireAuth,
   accountController.confirmeditprofile
 );
+
+router.get('/createpost', authMiddleware.requireAuth, accountController.createPost);
+router.post('/storepost', authMiddleware.requireAuth, accountController.storePost);
+router.get('/:id/editpost', authMiddleware.requireAuth, accountController.editPost);
+router.put('/:id', authMiddleware.requireAuth, accountController.updatePost);
+router.get('/:id/deletepost', authMiddleware.requireAuth, accountController.deletePost)
 
 module.exports = router;

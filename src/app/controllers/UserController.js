@@ -9,11 +9,20 @@ const jwt = require('jsonwebtoken');
 class UserController {
   viewUser(req, res, next) {
     const authorId = req.params.id;
-    Post.find({ authorId: authorId })
+    const myId = req.session.userId;
+    let isFriend = false;
+    Account.findById(authorId)
+      .then((account) => {
+        if (account.friendlist.some((friend) => friend.accountId === myId)) {
+          isFriend = true;
+        }
+        return Post.find({ authorId: authorId })
+      })
       .then((post) => {
         res.render('users/viewuser', {
           post: mutipleMongooseToObject(post),
           authorId,
+          isFriend,
         });
       })
       .catch(next);
@@ -32,7 +41,10 @@ class UserController {
 
       const promises = [
         Account.updateOne(
-          { _id: myId },
+          {
+            _id: myId,
+            friendrequest: { $not: { $elemMatch: { accountId: yourId } } },
+          },
           {
             $push: {
               friendrequest: { accountId: yourId, fullname: yourFullname },
@@ -40,7 +52,9 @@ class UserController {
           }
         ),
         Account.updateOne(
-          { _id: yourId },
+          { _id: yourId,
+            friendreceived: { $not: { $elemMatch: { accountId: myId } } },
+          },
           {
             $push: {
               friendreceived: { accountId: myId, fullname: myFullname },

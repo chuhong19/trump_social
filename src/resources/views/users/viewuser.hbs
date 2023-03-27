@@ -1,5 +1,8 @@
+{{#if isFriend}}
+<button><a href="{{authorId}}/unfriend">Unfriend</a></button>
+{{else}}
 <button><a href="{{authorId}}/addfriend">Add friend</a></button>
-
+{{/if}}
     <h1>Posts</h1>
     {{#if post}}
       <ul>
