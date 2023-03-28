@@ -94,7 +94,7 @@ class AccountController {
 
   deletePost(req, res, next) {
     Post.deleteOne({_id: req.params.id})
-      .then(() => res.redirect('/welcome'))
+      .then(() => res.redirect('/wall'))
       .catch(next);
   }
 

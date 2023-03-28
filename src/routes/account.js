@@ -24,6 +24,6 @@ router.get('/createpost', authMiddleware.requireAuth, accountController.createPo
 router.post('/storepost', authMiddleware.requireAuth, accountController.storePost);
 router.get('/:id/editpost', authMiddleware.requireAuth, accountController.editPost);
 router.put('/:id', authMiddleware.requireAuth, accountController.updatePost);
-router.get('/:id/deletepost', authMiddleware.requireAuth, accountController.deletePost)
+router.delete('/:id', authMiddleware.requireAuth, accountController.deletePost)
 
 module.exports = router;

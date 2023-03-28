@@ -8,6 +8,12 @@ const Post = new Schema(
     text: { type: String, require: true },
     authorId: { type: String, require: true },
     authorName: { type: String, require: true },
+    liked: [
+      {
+        accountId: { type: String },
+      },
+    ],
+    likedCount: { type: Number },
   },
   {
     timestamps: true,
