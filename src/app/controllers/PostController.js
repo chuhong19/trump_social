@@ -1,5 +1,6 @@
 const Account = require('../models/Account');
 const Post = require('../models/Post');
+const Comment = require('../models/Comment');
 const {
   mongooseToObject,
   mutipleMongooseToObject,
@@ -20,13 +21,44 @@ class PostController {
         },
         $inc: {
           likedCount: 1,
-        }
-      } 
+        },
+      }
     )
-    .then(() => {
-      res.redirect('back')
-    })
-    .catch(next);
+      .then(() => {
+        res.redirect('back');
+      })
+      .catch(next);
+  }
+
+  comment(req, res, next) {
+    const postId = req.params.id;
+    const accountId = req.session.userId;
+    const encodedCommentContent = req.query.content;
+    const commentContent = decodeURIComponent(encodedCommentContent);
+
+    Account.findById(accountId)
+      .then((account) => {
+        const accountName = account.fullname;
+        const comment = new Comment({
+          postId,
+          accountId,
+          accountName,
+          commentContent,
+        });
+        return comment.save();
+      })
+      .then((comment) => {
+        return Post.findByIdAndUpdate(postId, {
+          $push: {
+            comments: comment._id,
+          },
+          $inc: {
+            commentsCount: 1,
+          },
+        });
+      })
+      .then(() => res.redirect('/welcome'))
+      .catch(next);
   }
 }
 

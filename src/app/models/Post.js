@@ -14,6 +14,8 @@ const Post = new Schema(
       },
     ],
     likedCount: { type: Number },
+    commentsCount: { type: Number },
+    comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
   },
   {
     timestamps: true,

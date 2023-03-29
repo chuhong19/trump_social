@@ -4,15 +4,43 @@
     <div class="row">
         {{#each posts}}
         <div class="col-sm-6 col-lg-4">
-            <div class="card card-course-item">
+            <div class="card card-post-item">
                 <div class="card-body">
                     <a href="user/{{this.authorId}}">{{this.authorName}}</a>
                     <h5 class="card-title">{{this.title}}</h5>
                     <p class="card-text">{{this.text}}</p>
                     <a href="post/{{this._id}}/like" class="btn btn-primary">Like</a>
+                    <input type="text" class="mt-2 form-control" data-postid="{{this._id}}" id="comment" name="comment">
+                    <a href="#" class="mt-2 btn btn-primary comment-btn" data-postid="{{this._id}}">Comment</a>
                 </div>
             </div>
         </div>
         {{/each}}
     </div>
 </div>
+
+<script>
+  // Bắt sự kiện click vào nút Comment
+  const commentBtns = document.querySelectorAll('.comment-btn');
+  commentBtns.forEach(btn => { 
+    btn.addEventListener('click', (event) => {
+      event.preventDefault(); // Ngăn chặn chuyển hướng đến link mặc định của nút Comment
+      
+      const postId = event.target.dataset.postid; // Lấy id của post từ thuộc tính data-postid trên nút Comment
+
+      const commentInput = document.querySelector(`#comment[data-postid="${postId}"]`); 
+      // Tìm thẻ input tương ứng với post
+      
+      const commentContent = commentInput.value; // Lấy nội dung trên thẻ input
+  
+      const encodedCommentContent = encodeURIComponent(commentContent); // Mã hóa nội dung bằng encodeURIComponent()
+      
+      const commentLink = `post/${postId}/comment?content=${encodedCommentContent}`; 
+      // Tạo link mới với nội dung mã hóa đã lấy được
+      
+      window.location.href = commentLink; // Chuyển hướng đến link mới
+    });
+  });
+</script>
+
+
