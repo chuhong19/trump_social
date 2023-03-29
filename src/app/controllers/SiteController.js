@@ -5,6 +5,7 @@ const {
   mutipleMongooseToObject,
 } = require('../../util/mongoose');
 const jwt = require('jsonwebtoken');
+const { comment } = require('./PostController');
 
 class SiteController {
   index(req, res, next) {
@@ -12,11 +13,13 @@ class SiteController {
   }
 
   welcome(req, res, next) {
-    Post.find({}).then((posts) => {
-      res.render('welcome', {
-        posts: mutipleMongooseToObject(posts),
+    Post.find({})
+      .populate('comments')
+      .then((posts) => {
+        res.render('welcome', {
+          posts: mutipleMongooseToObject(posts),
+        });
       });
-    });
   }
 
   info(req, res, next) {

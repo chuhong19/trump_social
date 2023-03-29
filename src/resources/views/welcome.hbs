@@ -12,6 +12,16 @@
                     <a href="post/{{this._id}}/like" class="btn btn-primary">Like</a>
                     <input type="text" class="mt-2 form-control" data-postid="{{this._id}}" id="comment" name="comment">
                     <a href="#" class="mt-2 btn btn-primary comment-btn" data-postid="{{this._id}}">Comment</a>
+                    {{#if this.comments}}
+                    <div class="mt-2">
+                      <h6>Comments</h6>
+                      {{#each this.comments}}
+                      <p>
+                        <strong>{{this.accountName}}</strong>: {{this.commentContent}}
+                      </p>
+                      {{/each}}
+                    </div>
+                    {{/if}}
                 </div>
             </div>
         </div>
