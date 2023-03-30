@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/chuhong19/My-Social#readme",
   "dependencies": {
+    "argon2": "^0.30.3",
     "config": "^3.3.8",
     "connect-redis": "^7.0.1",
     "cookie-parser": "^1.4.6",

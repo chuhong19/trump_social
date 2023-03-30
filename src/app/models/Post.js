@@ -13,7 +13,7 @@ const Post = new Schema(
         accountId: { type: String },
       },
     ],
-    likedCount: { type: Number },
+    likedCount: { type: Number, default: 0 },
     commentsCount: { type: Number },
     comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
   },

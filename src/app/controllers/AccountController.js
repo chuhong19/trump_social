@@ -1,6 +1,7 @@
 const Account = require('../models/Account');
 const Post = require('../models/Post');
 const { mongooseToObject } = require('../../util/mongoose');
+const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
 
 class AccountController {
@@ -8,10 +9,10 @@ class AccountController {
     res.render('accounts/register');
   }
 
-  confirmRegister(req, res, next) {
-    const username = req.body.username;
-    const password = req.body.password;
-    const retypepassword = req.body.retypepassword;
+  async confirmRegister(req, res, next) {
+    const { username, password, retypepassword } = req.body;
+    const hashedPassword = await argon2.hash(password);
+    const hashedRetypePassword = await argon2.hash(retypepassword);
     if (
       !username ||
       !password ||
@@ -24,7 +25,10 @@ class AccountController {
     Account.findOne({ username: username })
       .then((data) => {
         if (!data) {
-          const account = new Account(req.body);
+          const account = new Account({
+            username,
+            password: hashedPassword,
+          });
           account
             .save()
             .then(() => res.redirect('/home'))
@@ -38,22 +42,33 @@ class AccountController {
       });
   }
 
-  confirmLogin(req, res, next) {
-    const username = req.body.username;
-    const password = req.body.password;
-    Account.findOne({ username, password })
-      .then((data) => {
-        if (data) {
-          const token = jwt.sign({ _id: data._id }, 'mk');
-          res.cookie('token', token);
-          const userId = jwt.verify(token, 'mk')._id;
-          req.session.userId = userId;
-          res.redirect('/welcome');
-        } else {
-          res.json('Wrong username or password');
-        }
-      })
-      .catch((err) => res.json('Server error: ' + err));
+  async confirmLogin(req, res, next) {
+    const { username, password } = req.body;
+    try {
+      const user = await Account.findOne({ username });
+      if (!user)
+        return res
+          .status(400)
+          .json({ success: false, message: 'Incorrect username or password' });
+
+      const passwordValid = await argon2.verify(user.password, password);
+      if (!passwordValid)
+        return res
+          .status(400)
+          .json({ success: false, message: 'Incorrect username or password' });
+
+      // Success
+      const token = jwt.sign({ _id: user._id }, 'mk');
+      res.cookie('token', token);
+      const userId = jwt.verify(token, 'mk')._id;
+      req.session.userId = userId;
+      res.redirect('/welcome');
+    } catch (error) {
+      console.log(error);
+      res
+        .status(500)
+        .json({ success: false, message: 'Internal server error' });
+    }
   }
 
   createPost(req, res, next) {
@@ -80,20 +95,22 @@ class AccountController {
 
   editPost(req, res, next) {
     Post.findById(req.params.id)
-      .then(post => res.render('posts/edit', {
-        post: mongooseToObject(post)
-      }))
+      .then((post) =>
+        res.render('posts/edit', {
+          post: mongooseToObject(post),
+        })
+      )
       .catch(next);
   }
 
   updatePost(req, res, next) {
-    Post.updateOne({_id: req.params.id}, req.body)
+    Post.updateOne({ _id: req.params.id }, req.body)
       .then(() => res.redirect('/welcome'))
       .catch(next);
   }
 
   deletePost(req, res, next) {
-    Post.deleteOne({_id: req.params.id})
+    Post.deleteOne({ _id: req.params.id })
       .then(() => res.redirect('/wall'))
       .catch(next);
   }
