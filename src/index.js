@@ -8,6 +8,7 @@ const session = require('express-session');
 const RedisStore = require('connect-redis').default;
 const Redis = require('ioredis');
 const clientRedis = new Redis();
+const cloudinary = require('cloudinary').v2;
 
 const app = express();
 const port = 3000;

@@ -3,3 +3,12 @@
 <h3>Age: {{data.age}}</h3>
 <h3>Email: {{data.email}}</h3>
 <h3>Phone: {{data.phone}}</h3>
+
+<form method="POST" action="/upload-image" id="upload-form" enctype="multipart/form-data">
+  <div>
+    <label for="image-input">Chọn một tệp ảnh:</label>
+    <input type="file" id="image-input" name="image">
+  </div>
+  <button type="submit">Tải lên</button>
+</form>
+

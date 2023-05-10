@@ -12,7 +12,7 @@ class AccountController {
   async confirmRegister(req, res, next) {
     const { username, password, retypepassword } = req.body;
     const hashedPassword = await argon2.hash(password);
-    const hashedRetypePassword = await argon2.hash(retypepassword);
+    //const hashedRetypePassword = await argon2.hash(retypepassword);
     if (
       !username ||
       !password ||
@@ -62,6 +62,7 @@ class AccountController {
       res.cookie('token', token);
       const userId = jwt.verify(token, 'mk')._id;
       req.session.userId = userId;
+      console.log(req.session)
       res.redirect('/welcome');
     } catch (error) {
       console.log(error);
@@ -126,7 +127,7 @@ class AccountController {
     });
   }
 
-  editprofile(req, res, next) {
+  editProfile(req, res, next) {
     const userId = req.session.userId;
     Account.findById(userId)
       .then((user) => {
@@ -137,7 +138,7 @@ class AccountController {
       .catch(next);
   }
 
-  confirmeditprofile(req, res, next) {
+  confirmEditProfile(req, res, next) {
     const userId = req.session.userId;
     Account.updateOne({ _id: userId }, req.body)
       .then(() => res.redirect('/wall'))

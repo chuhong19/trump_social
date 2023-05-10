@@ -1,11 +1,36 @@
 const Post = require('../models/Post');
 const Account = require('../models/Account');
+const Image = require('../models/Image');
 const {
   mongooseToObject,
   mutipleMongooseToObject,
 } = require('../../util/mongoose');
 const jwt = require('jsonwebtoken');
 const { comment } = require('./PostController');
+require('dotenv').config();
+
+const cloudinary = require('cloudinary').v2;
+const streamifier = require('streamifier');
+
+const streamUpload = (req) => {
+  return new Promise((resolve, reject) => {
+    let stream = cloudinary.uploader.upload_stream((error, result) => {
+      if (result) {
+        resolve(result);
+      } else {
+        reject(error);
+      }
+    });
+
+    streamifier.createReadStream(req.file.buffer).pipe(stream);
+  });
+};
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 class SiteController {
   index(req, res, next) {
@@ -13,6 +38,7 @@ class SiteController {
   }
 
   welcome(req, res, next) {
+    // Hiển thị tất cả các post
     Post.find({})
       .populate('comments')
       .then((posts) => {
@@ -49,6 +75,28 @@ class SiteController {
       });
     });
   }
+
+  uploadImage = async (req, res) => {
+    try {
+      const result = await streamUpload(req);
+      const cloudinaryId = result.public_id;
+      const imageUrl = result.url;
+      const formDataUpdate = {
+        cloudinaryId,
+        imageUrl,
+      };
+      const accountId = req.session.userId;
+      console.log(formDataUpdate);
+      const image = new Image({
+        cloudinaryId,
+        imageUrl,
+        avatarOf: accountId,
+      });
+      image.save().then(() => res.redirect('/profile'));
+    } catch (err) {
+      console.log('Error: ', err);
+    }
+  };
 }
 
 module.exports = new SiteController();

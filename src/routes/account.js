@@ -12,12 +12,12 @@ router.get('/logout', authMiddleware.requireAuth, accountController.logout);
 router.get(
   '/editprofile',
   authMiddleware.requireAuth,
-  accountController.editprofile
+  accountController.editProfile
 );
 router.put(
   '/confirmeditprofile',
   authMiddleware.requireAuth,
-  accountController.confirmeditprofile
+  accountController.confirmEditProfile
 );
 
 router.get('/createpost', authMiddleware.requireAuth, accountController.createPost);

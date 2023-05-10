@@ -22,9 +22,11 @@
   "homepage": "https://github.com/chuhong19/My-Social#readme",
   "dependencies": {
     "argon2": "^0.30.3",
+    "cloudinary": "^1.36.4",
     "config": "^3.3.8",
     "connect-redis": "^7.0.1",
     "cookie-parser": "^1.4.6",
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-handlebars": "^6.0.6",
     "express-session": "^1.17.3",
@@ -33,10 +35,13 @@
     "method-override": "^3.0.0",
     "mongoose": "^6.8.3",
     "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "multer-storage-cloudinary": "^4.0.0",
     "nodemon": "^2.0.20",
     "os": "^0.1.2",
     "passport": "^0.6.0",
     "passport-facebook": "^3.0.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "streamifier": "^0.1.1"
   }
 }
