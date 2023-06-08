@@ -62,7 +62,6 @@ class AccountController {
       res.cookie('token', token);
       const userId = jwt.verify(token, 'mk')._id;
       req.session.userId = userId;
-      console.log(req.session)
       res.redirect('/welcome');
     } catch (error) {
       console.log(error);
